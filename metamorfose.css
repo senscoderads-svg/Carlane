@@ -1,6 +1,6 @@
 /* --- ESTILOS EXCLUSIVOS DA TRANSFORMAÇÃO VETORIAL --- */
 
-/* CORREÇÃO CRÍTICA: Garante que o elemento central mude de posição de forma fluida */
+/* Garante que o elemento central mude de posição de forma fluida pelo JS */
 .flor-centro {
     position: absolute !important;
     transform-style: preserve-3d;
@@ -16,6 +16,8 @@
     z-index: 5;
     transform-style: preserve-3d;
     perspective: 1000px;
+    max-width: 95vw; /* Impede que as asas cortem na lateral do celular */
+    max-height: 95vh;
 }
 
 /* Esconde o miolo e pétalas antigos para dar lugar ao SVG real */
@@ -85,11 +87,6 @@
     0% { transform: rotateY(0deg) skewY(0deg); }
     50% { transform: rotateY(-45deg) skewY(5deg); }
     100% { transform: rotateY(15deg) skewY(-2deg); }
-}
-
-.svg-borboleta-gigante {
-    max-width: 95vw; /* Impede que as asas cortem na lateral do celular */
-    max-height: 95vh;
 }
 
 /* --- SILHUETA DA MÃO MÁGICA (FINAL DA CENA) --- */

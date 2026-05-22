@@ -165,7 +165,7 @@ function gerenciarCenario() {
             }
         }
 
-        if (faseAnimacao === 'metamorfose_flor') {
+               if (faseAnimacao === 'metamorfose_flor') {
             progressoMetamorfose += 0.003; 
             
             if (elementoFlor && !elementoFlor.classList.contains('em-metamorfose')) {
@@ -210,7 +210,36 @@ function gerenciarCenario() {
                 faseAnimacao = 'borboleta_gigante_ativa';
                 tempoFase = 0;
                 if (elementoFlor) {
-                    elementoFlor.classList.add('borboleta-gigante-concluida');
+                    // CORRIGIDO: Agora usa "gigante" em português para sincronizar com o CSS
+                    elementoFlor.classList.add('borboleta-gigante-concluida'); 
+                }
+            }
+        }
+
+        if (elementoFlor && faseAnimacao !== 'metamorfose_flor' && faseAnimacao !== 'borboleta_gigante_ativa' && faseAnimacao !== 'pousando_no_dedo' && faseAnimacao !== 'pousada') {
+            elementoFlor.style.transform = `translate(-50%, -50%) scale(${escalaFlorBase})`;
+        }
+
+        if (faseAnimacao === 'borboleta_gigante_ativa') {
+            if (tempoFase % 2 === 0) {
+                criarGlitter(cX + (Math.random() * 160 - 80), cY + (Math.random() * 160 - 80), 3, 12);
+            }
+            if (tempoFase > 240) {
+                faseAnimacao = 'surgindo_mao';
+                tempoFase = 0;
+                
+                if(!document.getElementById('maoFinal')) {
+                    const mContainer = document.createElement('div');
+                    mContainer.className = 'mao-final-container';
+                    mContainer.id = 'maoFinal';
+                    // CORRIGIDO: '6ed' alterado para '60' no desenho do caminho do SVG
+                    mContainer.innerHTML = `
+                        <svg class="svg-mao-silhueta" viewBox="0 0 450 350">
+                            <path class="path-mao" d="M450,350 L450,220 C380,200 340,240 280,240 C220,240 180,200 110,185 C100,183 90,183 80,183 C60,183 40,188 30,188 C25,188 20,184 25,180 C35,170 60,160 95,160 C130,160 190,155 240,165 C260,130 200,115 140,135 C110,143 90,155 70,175 C65,180 60,175 63,170 C80,145 110,120 150,110 C180,102 200,115 210,130 C230,90 185,75 130,105 C110,115 95,130 85,145 C80,152 74,148 77,142 C95,110 130,80 180,80 C210,80 220,95 225,110 C245,70 200,40 120,75 C100,84 70,115 50,125 C45,127 40,120 46,115 C75,90 120,40 190,40 C220,40 250,65 265,90 C290,125 330,155 390,160 C420,162 440,150 450,140" />
+                        </svg>
+                    `;
+                    document.body.appendChild(mContainer);
+                    setTimeout(() => mContainer.classList.add('visivel'), 50);
                 }
             }
         }

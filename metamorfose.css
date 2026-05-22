@@ -84,3 +84,33 @@
     max-width: 95vw; /* Impede que as asas cortem na lateral do celular */
     max-height: 95vh;
 }
+
+/* --- SILHUETA DA MÃO MÁGICA (FINAL DA CENA) --- */
+.mao-final-container {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 450px;
+    height: 350px;
+    z-index: 3;
+    pointer-events: none;
+    transform: translateY(100%); /* Começa escondida abaixo da tela */
+    transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Classe ativada pelo JS para fazer a mão subir */
+.mao-final-container.visivel {
+    transform: translateY(0);
+}
+
+.svg-mao-silhueta {
+    width: 100%;
+    height: 100%;
+}
+
+.path-mao {
+    fill: #08121a; /* Cor escura idêntica ao fundo da imagem */
+    stroke: #00e5ff; /* Contorno brilhante neon */
+    stroke-width: 1.5;
+    filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.5));
+}

@@ -59,7 +59,9 @@ function orbitar() {
 
     // Faz a flor crescer de tamanho com base no total de voltas
     const escalaFlor = Math.min(voltasCompletas * 0.3, 1.8);
-    elementoFlor.style.transform = `translate(-50%, -50%) scale(${escalaFlor})`;
+    if (elementoFlor) {
+        elementoFlor.style.transform = `translate(-50%, -50%) scale(${escalaFlor})`;
+    }
 
     const crescimentoBorboleta = voltasCompletas * 0.1;
 
@@ -83,115 +85,52 @@ function orbitar() {
     requestAnimationFrame(orbitar);
 }
 
-/* --- LOGICA DO GRAVADOR DE VÍDEO UNIVERSAL --- */
-let mediaRecorder;
-let chunks = [];
-let gravando = false;
-
-async function controlarGravacao() {
-    const btn = document.getElementById('btnGravar');
-    
-    if (!gravando) {
-        try {
-            const stream = await navigator.mediaDevices.getDisplayMedia({
-                video: { frameRate: { ideal: 30 } },
-                audio: false
-            });
-
-            let tipoSuportado = 'video/webm';
-            if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
-                tipoSuportado = 'video/webm;codecs=vp9';
-            } else if (MediaRecorder.isTypeSupported('video/mp4')) {
-                tipoSuportado = 'video/mp4';
-            }
-
-            mediaRecorder = new MediaRecorder(stream, { mimeType: tipoSuportado });
-            chunks = [];
-
-            mediaRecorder.ondataavailable = (e) => {
-                if (e.data.size > 0) chunks.push(e.data);
-            };
-
-            mediaRecorder.onstop = () => {
-                const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
-                const url = URL.createObjectURL(blob);
-                const ext = mediaRecorder.mimeType.includes('mp4') ? 'mp4' : 'webm';
-                
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `borboletas-magicas.${ext}`;
-                a.click();
-                URL.revokeObjectURL(url);
-                
-                gravando = false;
-                btn.innerText = "GRAVAR VÍDEO";
-                btn.classList.remove('gravando');
-            };
-
-            mediaRecorder.start();
-            gravando = true;
-            btn.innerText = "PARAR GRAVAÇÃO";
-            btn.classList.add('gravando');
-
-            stream.getVideoTracks().onended = () => {
-                if(mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
-            };
-
-        } catch (err) {
-            console.error("Erro ao tentar gravar: ", err);
-            alert("Atenção: A gravação exige rodar o arquivo em um servidor local (ex: extensões Live Server no VS Code) e aceitar a permissão de tela.");
-        }
-    } else {
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-            mediaRecorder.stop();
-        }
-    }
-}
-
 // Inicializa a órbita das borboletas
 orbitar();
+
+// Controle da Playlist de Músicas
 document.addEventListener("DOMContentLoaded", () => {
-    // Mapeia os botões e seus respectivos áudios
     const faixas = [
         { botao: document.getElementById("play_revolutionary"), audio: document.getElementById("musicaRevolutionary"), nome: "REVOLUTIONARY" },
         { botao: document.getElementById("play_amen"), audio: document.getElementById("musicaAmen"), nome: "AMEN" }
     ];
 
-    // Função para parar todas as músicas, exceto a atual (se fornecida)
     function pararTodas(excetoAudio = null) {
         faixas.forEach(faixa => {
-            if (faixa.audio !== excetoAudio) {
+            if (faixa.audio !== excetoAudio && faixa.audio) {
                 faixa.audio.pause();
-                faixa.audio.currentTime = 0; // Reinicia a música
-                faixa.botao.innerText = `OUVIR ${faixa.nome}`;
+                faixa.audio.currentTime = 0;
+                if (faixa.botao) faixa.botao.innerText = `OUVIR ${faixa.nome}`;
             }
         });
     }
 
-    // Configura o evento de clique para cada faixa da lista
     faixas.forEach(faixa => {
-        faixa.botao.addEventListener("click", () => {
-            if (faixa.audio.paused) {
-                pararTodas(faixa.audio); // Para a outra música antes de tocar esta
-                faixa.audio.play().catch(err => console.log("Erro ao reproduzir:", err));
-                faixa.botao.innerText = `PAUSAR ${faixa.nome}`;
-            } else {
-                faixa.audio.pause();
-                faixa.botao.innerText = `OUVIR ${faixa.nome}`;
-            }
-        });
+        if (faixa.botao && faixa.audio) {
+            faixa.botao.addEventListener("click", () => {
+                if (faixa.audio.paused) {
+                    pararTodas(faixa.audio);
+                    faixa.audio.play().catch(err => console.log("Erro ao reproduzir:", err));
+                    faixa.botao.innerText = `PAUSAR ${faixa.nome}`;
+                } else {
+                    faixa.audio.pause();
+                    faixa.botao.innerText = `OUVIR ${faixa.nome}`;
+                }
+            });
+        }
     });
 
-    // Tenta tocar a primeira música automaticamente ao abrir o site
-    faixas[0].audio.play().then(() => {
-        faixas[0].botao.innerText = `PAUSAR ${faixas[0].nome}`;
-    }).catch(() => {
-        // Se o navegador bloquear, aguarda o primeiro clique na página para tocar a primeira faixa
-        document.addEventListener("click", () => {
-            if (faixas[0].audio.paused && faixas[1].audio.paused) {
-                faixas[0].audio.play();
-                faixas[0].botao.innerText = `PAUSAR ${faixas[0].nome}`;
-            }
-        }, { once: true });
-    });
+    // Tenta tocar a primeira faixa de forma automática
+    if (faixas[0] && faixas[0].audio) {
+        faixas[0].audio.play().then(() => {
+            if (faixas[0].botao) faixas[0].botao.innerText = `PAUSAR ${faixas[0].nome}`;
+        }).catch(() => {
+            document.addEventListener("click", () => {
+                if (faixas[0].audio.paused && faixas[1].audio.paused) {
+                    faixas[0].audio.play();
+                    if (faixas[0].botao) faixas[0].botao.innerText = `PAUSAR ${faixas[0].nome}`;
+                }
+            }, { once: true });
+        });
+    }
 });

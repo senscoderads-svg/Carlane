@@ -35,8 +35,8 @@ function criarGlitter(x, y, quantidade = 1) {
         const p = document.createElement('div');
         p.className = 'particula';
         
-        // Usa as cores da música que está ativa no momento
-        p.style.backgroundColor = coresAtives[Math.floor(Math.random() * coresAtivas.length)];
+        // CORRIGIDO: Agora aponta corretamente para coresAtivas
+        p.style.backgroundColor = coresAtivas[Math.floor(Math.random() * coresAtivas.length)];
         
         const varX = (Math.random() * 30 - 15);
         const varY = (Math.random() * 30 - 15);
@@ -56,7 +56,7 @@ function criarGlitter(x, y, quantidade = 1) {
 
 // Inicializa as duas borboletas
 function inicializarBorboletas() {
-    if (borboletas.length > 0) return; // Evita duplicar se redefinido
+    if (borboletas.length > 0) return; 
     for (let i = 0; i < 2; i++) {
         const el = document.createElement('div');
         el.className = 'container-borboleta';
@@ -176,7 +176,7 @@ function gerenciarCenario() {
 // Inicia o fluxo de animações
 gerenciarCenario();
 
-// Controle da Playlist Inteligente de Músicas
+// Playlist Inteligente com passagem de faixas e mudança de temas
 document.addEventListener("DOMContentLoaded", () => {
     const faixas = [
         { botao: document.getElementById("play_jesus"), audio: document.getElementById("musicaJesus"), nome: "JESUS" },
@@ -186,11 +186,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let indiceAtivo = 0;
 
-    // Atualiza o tema visual de acordo com a música tocando
     function atualizarTemaVisual(nomeMusica) {
         coresAtivas = paletasCores[nomeMusica] || paletasCores.JESUS;
-        
-        // Remove classes de tema anteriores e adiciona a nova ao body
         document.body.className = '';
         document.body.classList.add(`tema-${nomeMusica.toLowerCase()}`);
     }
@@ -206,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function tocarFaixa(indice) {
-        if (indice >= faixas.length) indice = 0; // Volta para o início se acabar a playlist
+        if (indice >= faixas.length) indice = 0; 
         indiceAtivo = indice;
         
         const faixa = faixas[indiceAtivo];
@@ -221,7 +218,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Configura os cliques manuais nos botões
     faixas.forEach((faixa, indice) => {
         if (faixa.botao && faixa.audio) {
             faixa.botao.addEventListener("click", () => {
@@ -233,14 +229,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
-            // LOGICA DE REPRODUÇÃO AUTOMÁTICA: Quando a música termina, pula para a próxima faixa
             faixa.audio.addEventListener("ended", () => {
                 tocarFaixa(indiceAtivo + 1);
             });
         }
     });
 
-    // Tenta autoplay da primeira faixa (JESUS) ao carregar
     const primeiraFaixa = faixas[0];
     if (primeiraFaixa && primeiraFaixa.audio) {
         primeiraFaixa.audio.play()
@@ -249,7 +243,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 atualizarTemaVisual(primeiraFaixa.nome);
             })
             .catch(() => {
-                // Se o navegador bloquear, aguarda o primeiro clique do usuário
                 const iniciarNoClique = () => {
                     tocarFaixa(0);
                     document.removeEventListener("click", iniciarNoClique);

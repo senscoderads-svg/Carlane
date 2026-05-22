@@ -150,3 +150,15 @@ async function controlarGravacao() {
 
 // Inicializa a órbita das borboletas
 orbitar();
+document.addEventListener("DOMContentLoaded", () => {
+    const musica = document.getElementById("musicaFundo");
+
+    // Tenta tocar assim que a página carrega
+    musica.play().catch(() => {
+        // Se o navegador bloquear, toca no primeiro clique do usuário na página
+        document.addEventListener("click", () => {
+            musica.play();
+        }, { once: true }); // Executa apenas uma vez
+    });
+});
+

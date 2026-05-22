@@ -184,3 +184,34 @@ body {
     0% { transform: scale(1); opacity: 1; }
     100% { transform: scale(0); opacity: 0; }
 }
+.btn-gravar, .play {
+    position: absolute;
+    top: 20px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* Botão Gravar (Esquerda) */
+.btn-gravar {
+    left: 20px;
+    background-color: #ff4757;
+    color: white;
+}
+
+/* Botão Ouvir Música (Direita) */
+.play {
+    right: 20px;
+    background-color: #2ed573;
+    color: white;
+}
+
+/* Efeito de Clique nos Botões */
+.btn-gravar:active, .play:active {
+    transform: scale(0.95);
+}

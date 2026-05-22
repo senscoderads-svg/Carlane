@@ -6,6 +6,7 @@ body {
     overflow: hidden;
     perspective: 1500px;
     font-family: sans-serif;
+    transition: background 1.5s ease-in-out; /* Transição suave de fundo */
 }
 
 /* --- CONTAINER DOS BOTÕES DA PLAYLIST (Fixo no Topo) --- */
@@ -18,7 +19,6 @@ body {
     z-index: 100;
 }
 
-/* Estilo unificado para os botões de música */
 .play {
     position: relative;
     padding: 12px 24px;
@@ -35,14 +35,12 @@ body {
     transition: all 0.2s ease;
 }
 
-/* Efeito Hover nos botões de música */
 .play:hover {
     background: rgba(0, 229, 255, 0.4);
     box-shadow: 0 0 22px rgba(0, 229, 255, 0.7);
     transform: scale(1.03);
 }
 
-/* Efeito de Clique ativo */
 .play:active {
     transform: scale(0.97);
 }
@@ -54,11 +52,11 @@ body {
     left: 50%;
     width: 120px;
     height: 120px;
-    transform: translate(-50%, -50%) scale(0); /* Começa zerada para obedecer o script */
+    transform: translate(-50%, -50%) scale(0);
     transform-style: preserve-3d;
     pointer-events: none;
     z-index: 2;
-    transition: transform 0.1s linear; /* Acompanha o loop sem atraso */
+    transition: transform 0.1s linear, background 1s ease;
 }
 
 .petala-grupo {
@@ -66,6 +64,7 @@ body {
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
+    transition: all 2s ease-in-out;
 }
 
 .petala-grupo.interna {
@@ -82,6 +81,7 @@ body {
     border-radius: 50% 50% 0 0;
     transform-origin: bottom center;
     filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.6));
+    transition: all 3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .petala:nth-child(1) { transform: rotate(0deg); }
@@ -103,6 +103,7 @@ body {
     border-radius: 50%;
     box-shadow: 0 0 25px 8px #ffffff, 0 0 40px 15px #00e5ff;
     animation: pulsarMiolo 2s infinite alternate ease-in-out;
+    transition: all 2s ease;
 }
 
 @keyframes pulsarMiolo {
@@ -110,7 +111,50 @@ body {
     100% { transform: scale(1.1); filter: brightness(1.3); }
 }
 
-/* --- DESIGN DAS BORBOLETAS MÁGICAS --- */
+/* --- TRANSIÇÃO DA METAMORFOSE DO ESTADO DA FLOR --- */
+.flor-centro.em-metamorfose, .flor-centro.borboleta-gigante-concluida {
+    transform: translate(-50%, -50%) scale(2.8) !important; 
+}
+
+.flor-centro.em-metamorfose .petala, .flor-centro.borboleta-gigante-concluida .petala {
+    border-radius: 40% 70% 20% 50%;
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.95) 0%, rgba(236, 72, 153, 0.95) 50%, rgba(168, 85, 247, 0.8) 100%);
+    filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.8));
+}
+
+.flor-centro.em-metamorfose .petala:nth-child(1), .flor-centro.borboleta-gigante-concluida .petala:nth-child(1) { transform: rotate(35deg) scaleY(1.6) skewX(10deg); }
+.flor-centro.em-metamorfose .petala:nth-child(2), .flor-centro.borboleta-gigante-concluida .petala:nth-child(2) { transform: rotate(-35deg) scaleY(1.6) skewX(-10deg); left: 35%; }
+.flor-centro.em-metamorfose .petala:nth-child(3), .flor-centro.borboleta-gigante-concluida .petala:nth-child(3) { transform: rotate(145deg) scale(1.1) skewX(-5deg); }
+.flor-centro.em-metamorfose .petala:nth-child(4), .flor-centro.borboleta-gigante-concluida .petala:nth-child(4) { transform: rotate(-145deg) scale(1.1) skewX(5deg); left: 35%; }
+
+.flor-centro.em-metamorfose .petala:nth-child(5), .flor-centro.em-metamorfose .petala:nth-child(6),
+.flor-centro.em-metamorfose .petala:nth-child(7), .flor-centro.em-metamorfose .petala:nth-child(8),
+.flor-centro.borboleta-gigante-concluida .petala:nth-child(5), .flor-centro.borboleta-gigante-concluida .petala:nth-child(6),
+.flor-centro.borboleta-gigante-concluida .petala:nth-child(7), .flor-centro.borboleta-gigante-concluida .petala:nth-child(8) {
+    opacity: 0;
+    transform: scale(0);
+}
+
+.flor-centro.em-metamorfose .miolo, .flor-centro.borboleta-gigante-concluida .miolo {
+    width: 10px;
+    height: 70px;
+    top: 25px;
+    left: 55px;
+    border-radius: 5px;
+    background: linear-gradient(to bottom, #ffffff, #00e5ff, #ff4081);
+    box-shadow: 0 0 35px #ffffff, 0 0 50px rgba(0, 229, 255, 1);
+}
+
+.flor-centro.borboleta-gigante-concluida .petala-grupo.externa {
+    animation: baterAsasGigantes 2.8s infinite alternate ease-in-out;
+}
+
+@keyframes baterAsasGigantes {
+    0% { transform: rotateY(0deg); filter: brightness(1); }
+    100% { transform: rotateY(62deg); filter: brightness(1.4); }
+}
+
+/* --- DESIGN DAS BORBOLETAS MÁGICAS PEQUENAS --- */
 .container-borboleta {
     position: absolute;
     width: 100px;
@@ -120,7 +164,7 @@ body {
     filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.6));
     will-change: transform, left, top;
     z-index: 10;
-    transition: transform 0.1s linear;
+    transition: transform 0.1s linear, opacity 0.5s ease;
 }
 
 .corpo-central {
@@ -180,7 +224,7 @@ body {
     border-radius: 50%;
     pointer-events: none;
     mix-blend-mode: screen;
-    animation: sumirParticula 1s forwards ease-out;
+    animation: sumirParticula 1.5s forwards ease-out;
     z-index: 5;
 }
 
@@ -190,21 +234,14 @@ body {
 }
 
 /* --- TRANSIÇÃO DE CORES DINÂMICAS DO FUNDO --- */
-body {
-    transition: background 1.5s ease-in-out; /* Faz a cor mudar de forma suave */
-}
-
-/* Fundo padrão / Música Jesus (Dourado/Fogo) */
 body.tema-jesus {
     background: radial-gradient(circle at 50% 50%, #4a3b1a 0%, #1c1507 50%, #0a0802 100%);
 }
 
-/* Fundo Música Revolutionary (Púrpura/Neon) */
 body.tema-revolutionary {
     background: radial-gradient(circle at 50% 50%, #441a4a 0%, #19071c 50%, #0a020b 100%);
 }
 
-/* Fundo Música Amen (Azul Celestial) */
 body.tema-amen {
     background: radial-gradient(circle at 50% 50%, #1e4f70 0%, #0a1c28 50%, #030a10 100%);
 }

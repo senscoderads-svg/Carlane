@@ -5,7 +5,7 @@ const htmlBorboleta = `
     <div class="asa direita"></div>
 `;
 
-const raioCirculo = 160; 
+const raioCirculoBase = 160; // Raio inicial do círculo
 const elementoFlor = document.getElementById('flor');
 
 let anguloTotalPercorrido = 0;
@@ -57,27 +57,37 @@ function orbitar() {
     anguloTotalPercorrido += velocidadeVoo;
     const voltasCompletas = anguloTotalPercorrido / (2 * Math.PI);
 
-    // Faz a flor crescer de tamanho com base no total de voltas
-    const escalaFlor = Math.min(voltasCompletas * 0.3, 1.8);
+    // Fator de escala unificado (Controla o crescimento proporcional de tudo ao mesmo tempo)
+    // Começa em 0 e vai aumentando suavemente até o limite máximo de 1.8
+    const multiplicadorEscala = Math.min(voltasCompletas * 0.3, 1.8);
+    
+    // Garante que o tamanho inicial não seja zero para a animação começar fluida
+    const escalaAtual = Math.max(multiplicadorEscala, 0.5); 
+
+    // 1. Faz a flor crescer de tamanho
     if (elementoFlor) {
-        elementoFlor.style.transform = `translate(-50%, -50%) scale(${escalaFlor})`;
+        elementoFlor.style.transform = `translate(-50%, -50%) scale(${escalaAtual})`;
     }
 
-    const crescimentoBorboleta = voltasCompletas * 0.1;
+    // 2. Expande o tamanho do círculo proporcionalmente à escala atual
+    const raioCirculoAtual = raioCirculoBase * escalaAtual;
 
     borboletas.forEach(b => {
         b.angulo += b.velocidade;
 
-        const x = cX + Math.cos(b.angulo) * raioCirculo;
-        const y = cY + Math.sin(b.angulo) * raioCirculo;
+        // Calcula as posições usando o novo raio expandido
+        const x = cX + Math.cos(b.angulo) * raioCirculoAtual;
+        const y = cY + Math.sin(b.angulo) * raioCirculoAtual;
 
         b.elemento.style.left = x + 'px';
         b.elemento.style.top = y + 'px';
 
         const anguloRotacao = (b.angulo * 180 / Math.PI) + 180;
-        const tamanhoAtual = b.tamanhoBase + crescimentoBorboleta;
+        
+        // 3. Faz as borboletas crescerem no mesmo ritmo proporcional da flor e do círculo
+        const tamanhoBorboletaAtual = b.tamanhoBase * escalaAtual;
 
-        b.elemento.style.transform = `translate(-50%, -50%) scale(${tamanhoAtual}) rotate(${anguloRotacao}deg)`;
+        b.elemento.style.transform = `translate(-50%, -50%) scale(${tamanhoBorboletaAtual}) rotate(${anguloRotacao}deg)`;
 
         criarGlitter(x, y);
     });
@@ -91,9 +101,9 @@ orbitar();
 // Controle da Playlist de Músicas
 document.addEventListener("DOMContentLoaded", () => {
     const faixas = [
+        { botao: document.getElementById("play_jesus"), audio: document.getElementById("musicaJesus"), nome: "JESUS" },
         { botao: document.getElementById("play_revolutionary"), audio: document.getElementById("musicaRevolutionary"), nome: "REVOLUTIONARY" },
-        { botao: document.getElementById("play_amen"), audio: document.getElementById("musicaAmen"), nome: "AMEN" },
-        { botao: document.getElementById("play_jesus"), audio: document.getElementById("musicaJesus"), nome:"JESUS"}
+        { botao: document.getElementById("play_amen"), audio: document.getElementById("musicaAmen"), nome: "AMEN" }
     ];
 
     function pararTodas(excetoAudio = null) {
@@ -121,17 +131,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Tenta tocar a primeira faixa de forma automática
+    // Tenta tocar a primeira faixa (JESUS) automaticamente ao carregar a página
     if (faixas[0] && faixas[0].audio) {
         faixas[0].audio.play().then(() => {
             if (faixas[0].botao) faixas[0].botao.innerText = `PAUSAR ${faixas[0].nome}`;
         }).catch(() => {
-            document.addEventListener("click", () => {
-                if (faixas[0].audio.paused && faixas[1].audio.paused) {
-                    faixas[0].audio.play();
-                    if (faixas[0].botao) faixas[0].botao.innerText = `PAUSAR ${faixas[0].nome}`;
+            const iniciarNoClique = () => {
+                if (faixas[0].audio.paused) {
+                    faixas[0].audio.play()
+                        .then(() => {
+                            if (faixas[0].botao) faixas[0].botao.innerText = `PAUSAR ${faixas[0].nome}`;
+                        })
+                        .catch(err => console.log("Bloqueado pelas restrições do navegador:", err));
                 }
-            }, { once: true });
+                document.removeEventListener("click", iniciarNoClique);
+            };
+            document.addEventListener("click", iniciarNoClique);
         });
     }
 });

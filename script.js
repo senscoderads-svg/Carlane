@@ -29,6 +29,10 @@ let coresAtivas = paletasCores.JESUS;
 let maoX = window.innerWidth / 2;
 let maoY = -50; 
 
+let giantB_X = null;
+let giantB_Y = null;
+let escalaMaximaFlor = 1.8;
+
 // Recalcula o tamanho se o usuário redimensionar a janela ou girar o celular
 window.addEventListener('resize', () => {
     raioCirculoBase = Math.min(window.innerWidth, window.innerHeight) * 0.22;
@@ -36,7 +40,8 @@ window.addEventListener('resize', () => {
 });
 
 function criarGlitter(x, y, quantidade = 1, tamanhoMaximo = 6) {
-    for (let i = 0; i < quantity; i++) { // Corrigido erro de sintaxe comum (quantity -> quantidade)
+    // CORRIGIDO: Agora usa 'quantidade' corretamente, evitando travar o navegador
+    for (let i = 0; i < quantidade; i++) { 
         const p = document.createElement('div');
         p.className = 'particula';
         
@@ -77,12 +82,6 @@ function inicializarBorboletas() {
         });
     }
 }
-
-// A partir daqui inicia o bloco da função gerenciarCenario() enviado anteriormente...
-// Variáveis extras para o controle do voo final (coloque logo acima de gerenciarCenario)
-let giantB_X = null;
-let giantB_Y = null;
-let escalaMaximaFlor = 1.8;
 
 function gerenciarCenario() {
     const cX = window.innerWidth / 2;
@@ -165,7 +164,7 @@ function gerenciarCenario() {
             }
         }
 
-               if (faseAnimacao === 'metamorfose_flor') {
+        if (faseAnimacao === 'metamorfose_flor') {
             progressoMetamorfose += 0.003; 
             
             if (elementoFlor && !elementoFlor.classList.contains('em-metamorfose')) {
@@ -210,8 +209,7 @@ function gerenciarCenario() {
                 faseAnimacao = 'borboleta_gigante_ativa';
                 tempoFase = 0;
                 if (elementoFlor) {
-                    // CORRIGIDO: Agora usa "gigante" em português para sincronizar com o CSS
-                    elementoFlor.classList.add('borboleta-gigante-concluida'); 
+                    elementoFlor.classList.add('borboleta-gigante-concluida');
                 }
             }
         }
@@ -231,8 +229,11 @@ function gerenciarCenario() {
                 if(!document.getElementById('maoFinal')) {
                     const mContainer = document.createElement('div');
                     mContainer.className = 'mao-final-container';
+// Cole este bloco para substituir toda a metade final com erro do seu script.js:
+                if(!document.getElementById('maoFinal')) {
+                    const mContainer = document.createElement('div');
+                    mContainer.className = 'mao-final-container';
                     mContainer.id = 'maoFinal';
-                    // CORRIGIDO: '6ed' alterado para '60' no desenho do caminho do SVG
                     mContainer.innerHTML = `
                         <svg class="svg-mao-silhueta" viewBox="0 0 450 350">
                             <path class="path-mao" d="M450,350 L450,220 C380,200 340,240 280,240 C220,240 180,200 110,185 C100,183 90,183 80,183 C60,183 40,188 30,188 C25,188 20,184 25,180 C35,170 60,160 95,160 C130,160 190,155 240,165 C260,130 200,115 140,135 C110,143 90,155 70,175 C65,180 60,175 63,170 C80,145 110,120 150,110 C180,102 200,115 210,130 C230,90 185,75 130,105 C110,115 95,130 85,145 C80,152 74,148 77,142 C95,110 130,80 180,80 C210,80 220,95 225,110 C245,70 200,40 120,75 C100,84 70,115 50,125 C45,127 40,120 46,115 C75,90 120,40 190,40 C220,40 250,65 265,90 C290,125 330,155 390,160 C420,162 440,150 450,140" />
@@ -242,42 +243,11 @@ function gerenciarCenario() {
                     setTimeout(() => mContainer.classList.add('visivel'), 50);
                 }
             }
-        }
+        } // CHAVE CORRIGIDA: Esta chave fecha corretamente a estrutura da 'borboleta_gigante_ativa'
 
-        if (elementoFlor && faseAnimacao !== 'metamorfose_flor' && faseAnimacao !== 'borboleta_gigante_ativa' && faseAnimacao !== 'pousando_no_dedo' && faseAnimacao !== 'pousada') {
-            elementoFlor.style.transform = `translate(-50%, -50%) scale(${escalaFlorBase})`;
-        }
-
-        if (faseAnimacao === 'borboleta_gigante_ativa') {
-            if (tempoFase % 2 === 0) {
-                criarGlitter(cX + (Math.random() * 160 - 80), cY + (Math.random() * 160 - 80), 3, 12);
-            }
-            // Após 4 segundos ativa no centro, faz a mão do fim surgir
-            if (tempoFase > 240) {
-                faseAnimacao = 'surgindo_mao';
-                tempoFase = 0;
-                
-                // Injeta dinamicamente o container da mão vinda do canto
-                if(!document.getElementById('maoFinal')) {
-                    const mContainer = document.createElement('div');
-                    mContainer.className = 'mao-final-container';
-                    mContainer.id = 'maoFinal';
-                    mContainer.innerHTML = `
-                        <svg class="svg-mao-silhueta" viewBox="0 0 450 350">
-                            <path class="path-mao" d="M450,350 L450,220 C380,200 340,240 280,240 C220,240 180,200 110,185 C100,183 90,183 80,183 C60,183 40,188 30,188 C25,188 20,184 25,180 C35,170 6ed,160 95,160 C130,160 190,155 240,165 C260,130 200,115 140,135 C110,143 90,155 70,175 C65,180 60,175 63,170 C80,145 110,120 150,110 C180,102 200,115 210,130 C230,90 185,75 130,105 C110,115 95,130 85,145 C80,152 74,148 77,142 C95,110 130,80 180,80 C210,80 220,95 225,110 C245,70 200,40 120,75 C100,84 70,115 50,125 C45,127 40,120 46,115 C75,90 120,40 190,40 C220,40 250,65 265,90 C290,125 330,155 390,160 C420,162 440,150 450,140" />
-                        </svg>
-                    `;
-                    document.body.appendChild(mContainer);
-                    // Força o navegador a renderizar antes de subir com a transição
-                    setTimeout(() => mContainer.classList.add('visivel'), 50);
-                }
-            }
-        }
-
-        // --- NOVA FASE: ESPERA A MÃO SUBIR ---
         if (faseAnimacao === 'surgindo_mao') {
             if (tempoFase % 2 === 0) criarGlitter(cX, cY, 1, 10);
-            if (tempoFase > 150) { // Tempo da subida da mão terminada
+            if (tempoFase > 150) { 
                 faseAnimacao = 'pousando_no_dedo';
                 giantB_X = cX;
                 giantB_Y = cY;
@@ -285,14 +255,11 @@ function gerenciarCenario() {
             }
         }
 
-        // --- NOVA FASE: VOO SUAVE ATÉ A PONTA DO DEDO ---
         if (faseAnimacao === 'pousando_no_dedo' || faseAnimacao === 'pousada') {
-            // Calcula dinamicamente as coordenadas exatas da ponta do indicador baseado na tela atual
             const dedoX = window.innerWidth - 450 + 35; 
             const dedoY = window.innerHeight - 350 + 183;
 
             if (faseAnimacao === 'pousando_no_dedo') {
-                // Interpolação Linear (LERP): Voa super macio até o alvo
                 giantB_X += (dedoX - giantB_X) * 0.015;
                 giantB_Y += (dedoY - giantB_Y) * 0.015;
 
@@ -300,7 +267,6 @@ function gerenciarCenario() {
                     faseAnimacao = 'pousada';
                 }
             } else {
-                // Estado pousada estável: Mantém a posição exata no dedo indicador
                 giantB_X = dedoX;
                 giantB_Y = dedoY;
             }
@@ -308,11 +274,9 @@ function gerenciarCenario() {
             if (elementoFlor) {
                 elementoFlor.style.left = giantB_X + 'px';
                 elementoFlor.style.top = giantB_Y + 'px';
-                // Move o eixo de transformação para a base da borboleta pousar certinho no ponto
                 elementoFlor.style.transform = `translate(-50%, -85%) scale(${escalaMaximaFlor * 1.3})`;
             }
 
-            // Solta partículas brilhantes ao redor do ponto de pouso
             if (tempoFase % 3 === 0) {
                 criarGlitter(giantB_X, giantB_Y, 1, faseAnimacao === 'pousada' ? 6 : 10);
             }
@@ -332,8 +296,7 @@ function gerenciarCenario() {
 
             const anguloRotacao = (b.angulo * 180 / Math.PI) + 180;
             const tamanhoBorboletaAtual = b.tamanhoBase * (factorEscalaCirculo * 0.5 + 0.5);
-            
-            // CORRIGIDO: Adicionado as crases corretas na string de estilização
+
             b.elemento.style.transform = `translate(-50%, -50%) scale(${tamanhoBorboletaAtual}) rotate(${anguloRotacao}deg)`;
 
             if (opacidadeBorboletasPequenas > 0) {
@@ -342,14 +305,14 @@ function gerenciarCenario() {
                 b.elemento.style.display = 'none'; 
             }
         });
-    } // Fecha o bloco da orbita_normal/metamorfose
+    }
 
     requestAnimationFrame(gerenciarCenario);
-} // Fecha a função gerenciarCenario
+}
 
+gerenciarCenario();
 
-
-// Playlist Inteligente com passagem automática de faixas e troca de temas de cores
+// Playlist Inteligente com passagem automática e troca de temas visuais
 document.addEventListener("DOMContentLoaded", () => {
     const faixas = [
         { botao: document.getElementById("play_jesus"), audio: document.getElementById("musicaJesus"), nome: "JESUS" },
@@ -359,7 +322,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let indiceAtivo = 0;
 
-    // Atualiza a paleta de partículas e a classe de tema do fundo do site
     function atualizarTemaVisual(nomeMusica) {
         coresAtivas = paletasCores[nomeMusica] || paletasCores.JESUS;
         document.body.className = '';
@@ -385,11 +347,10 @@ document.addEventListener("DOMContentLoaded", () => {
             faixa.audio.play().then(() => {
                 if (faixa.botao) faixa.botao.innerText = `PAUSAR ${faixa.nome}`;
                 atualizarTemaVisual(faixa.nome);
-            }).catch(err => console.log("Bloqueado pelo navegador. Aguardando clique do usuário.", err));
+            }).catch(err => console.log("Aguardando clique do usuário para iniciar áudio.", err));
         }
     }
 
-    // Configura os ouvintes de clique e o evento de fim de áudio
     faixas.forEach((faixa, indice) => {
         if (faixa.botao && faixa.audio) {
             faixa.botao.addEventListener("click", () => {
@@ -400,18 +361,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     faixa.botao.innerText = `OUVIR ${faixa.nome}`;
                 }
             });
-
             faixa.audio.addEventListener("ended", () => {
                 tocarFaixa(indiceAtivo + 1);
             });
         }
     });
 
-    // Tentativa segura de reprodução automática ao carregar o site
-    if (faixas[0] && faixas[0].audio) {
-        faixas[0].audio.play().then(() => {
-            if (faixas[0].botao) faixas[0].botao.innerText = `PAUSAR ${faixas[0].nome}`;
-            atualizarTemaVisual(faixas[0].nome);
+    if (faixas && faixas.audio) {
+        faixas.audio.play().then(() => {
+            if (faixas.botao) faixas.botao.innerText = `PAUSAR ${faixas.nome}`;
+            atualizarTemaVisual(faixas.nome);
         }).catch(() => {
             const iniciarNoClique = () => {
                 tocarFaixa(0);
@@ -421,3 +380,4 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+}

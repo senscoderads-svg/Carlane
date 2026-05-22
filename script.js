@@ -9,7 +9,8 @@ const raioCirculoBase = 160;
 const elementoFlor = document.getElementById('flor');
 
 let anguloTotalPercorrido = 0;
-const velocidadeVoo = 0.025;
+// Deixou o voo mais calmo (era 0.025)
+const velocidadeVoo = 0.012; 
 
 // Estados da introdução: 'mao_descendo', 'mao_semeando', 'borboletas_surgindo', 'orbita_normal'
 let faseAnimacao = 'mao_descendo'; 
@@ -17,15 +18,14 @@ let tempoFase = 0;
 
 // Paletas de cores mágicas dinâmicas para cada música
 const paletasCores = {
-    JESUS: ['#ffffff', '#ffeb3b', '#ff9800', '#ff5722'],          // Dourado/Fogo Sagrado
-    REVOLUTIONARY: ['#ff4081', '#e040fb', '#9c27b0', '#ffffff'],  // Neon/Púrpura Vibrante
-    AMEN: ['#00e5ff', '#009688', '#2196f3', '#ffffff']           // Azul Celestial/Aqua
+    JESUS: ['#ffffff', '#ffeb3b', '#ff9800', '#ff5722'],          
+    REVOLUTIONARY: ['#ff4081', '#e040fb', '#9c27b0', '#ffffff'],  
+    AMEN: ['#00e5ff', '#009688', '#2196f3', '#ffffff']           
 };
 
-// Cores ativas no momento (Inicia com as cores da primeira música: JESUS)
 let coresAtivas = paletasCores.JESUS;
 
-// Posição da mão mágica
+// Posição inicial da mão mágica
 let maoX = window.innerWidth / 2;
 let maoY = -50; 
 
@@ -35,7 +35,6 @@ function criarGlitter(x, y, quantidade = 1) {
         const p = document.createElement('div');
         p.className = 'particula';
         
-        // CORRIGIDO: Agora aponta corretamente para coresAtivas
         p.style.backgroundColor = coresAtivas[Math.floor(Math.random() * coresAtivas.length)];
         
         const varX = (Math.random() * 30 - 15);
@@ -43,14 +42,14 @@ function criarGlitter(x, y, quantidade = 1) {
         p.style.left = (x + varX) + 'px';
         p.style.top = (y + varY) + 'px';
         
-        const tam = (2 + Math.random() * 7) + 'px';
+        const tam = (2 + Math.random() * 6) + 'px';
         p.style.width = tam;
         p.style.height = tam;
         
         p.style.boxShadow = `0 0 10px ${p.style.backgroundColor}`;
 
         document.body.appendChild(p);
-        setTimeout(() => p.remove(), 1000);
+        setTimeout(() => p.remove(), 1200); // Partículas duram um pouco mais para dar leveza
     }
 }
 
@@ -69,7 +68,7 @@ function inicializarBorboletas() {
             angulo: i * Math.PI, 
             velocidade: velocidadeVoo, 
             tamanhoBase: 0.75 + (i * 0.1),
-            xAtual: i === 0 ? -100 : window.innerWidth + 100, 
+            xAtual: i === 0 ? -150 : window.innerWidth + 150, // Começam um pouco mais fora da tela
             yAtual: window.innerHeight / 2
         });
     }
@@ -81,29 +80,34 @@ function gerenciarCenario() {
     const cY = window.innerHeight / 2;
     tempoFase++;
 
+    // --- FASE 1: MÃO MÁGICA DESCE DO TOPO SUAVEMENTE ---
     if (faseAnimacao === 'mao_descendo') {
-        maoY += (cY - maoY) * 0.05;
-        criarGlitter(maoX, maoY, 3);
+        // Reduzido a velocidade de aproximação para ser mais sutil (era 0.05)
+        maoY += (cY - maoY) * 0.02; 
+        criarGlitter(maoX, maoY, 2);
 
-        if (Math.abs(maoY - cY) < 5) {
+        if (Math.abs(maoY - cY) < 8) {
             faseAnimacao = 'mao_semeando';
             tempoFase = 0;
         }
     }
     
+    // --- FASE 2: MÃO SEMEIA NO CENTRO DE FORMA CALMA ---
     else if (faseAnimacao === 'mao_semeando') {
-        const raioSemeadura = 30;
-        const sX = cX + Math.cos(tempoFase * 0.2) * raioSemeadura;
-        const sY = cY + Math.sin(tempoFase * 0.2) * raioSemeadura;
-        criarGlitter(sX, sY, 5);
+        const raioSemeadura = 40;
+        // Movimento circular bem mais lento (era 0.2)
+        const sX = cX + Math.cos(tempoFase * 0.08) * raioSemeadura;
+        const sY = cY + Math.sin(tempoFase * 0.08) * raioSemeadura;
+        criarGlitter(sX, sY, 3);
 
-        if (tempoFase > 80) { 
+        if (tempoFase > 140) { // Aumentado o tempo semeando para ser gradual
             faseAnimacao = 'borboletas_surgindo';
             inicializarBorboletas();
             tempoFase = 0;
         }
     }
     
+    // --- FASE 3: BORBOLETAS ENTRAN NA ÓRBITA SUAVEMENTE ---
     else if (faseAnimacao === 'borboletas_surgindo') {
         let chegaramNoDestino = true;
 
@@ -113,18 +117,19 @@ function gerenciarCenario() {
             const destinoX = cX + Math.cos(b.angulo) * raioCirculoBase;
             const destinoY = cY + Math.sin(b.angulo) * raioCirculoBase;
 
-            b.xAtual += (destinoX - b.xAtual) * 0.05;
-            b.yAtual += (destinoY - b.yAtual) * 0.05;
+            // Entrada muito mais lenta e suave na órbita (era 0.05)
+            b.xAtual += (destinoX - b.xAtual) * 0.02;
+            b.yAtual += (destinoY - b.yAtual) * 0.02;
 
             b.elemento.style.left = b.xAtual + 'px';
             b.elemento.style.top = b.yAtual + 'px';
 
             const anguloRotacao = (b.angulo * 180 / Math.PI) + 180;
-            b.elemento.style.transform = `translate(-50%, -50%) scale(${b.tamanhoBase * 0.5}) rotate(${anguloRotacao}deg)`;
+            b.elemento.style.transform = `translate(-50%, -50%) scale(${b.tamanhoBase * 0.6}) rotate(${anguloRotacao}deg)`;
 
             criarGlitter(b.xAtual, b.yAtual, 1);
 
-            if (Math.abs(b.xAtual - destinoX) > 8) chegaramNoDestino = false;
+            if (Math.abs(b.xAtual - destinoX) > 5) chegaramNoDestino = false;
         });
 
         if (chegaramNoDestino) {
@@ -132,15 +137,17 @@ function gerenciarCenario() {
         }
     }
     
+    // --- FASE 4: ÓRBITA FLUIDA E CRESCIMENTO DELICADO DA FLOR ---
     else if (faseAnimacao === 'orbita_normal') {
         anguloTotalPercorrido += velocidadeVoo;
         const voltasCompletas = anguloTotalPercorrido / (2 * Math.PI);
 
         let escalaAtual = 0;
         if (voltasCompletas >= 1) {
-            const progressoCrescimento = (voltasCompletas - 1) * 0.3;
+            // Crescimento da flor estendido e muito mais lento (era 0.3)
+            const progressoCrescimento = (voltasCompletas - 1) * 0.12;
             escalaAtual = Math.min(progressoCrescimento, 1.8);
-            escalaAtual = Math.max(escalaAtual, 0.1); 
+            escalaAtual = Math.max(escalaAtual, 0.05); 
         }
 
         if (elementoFlor) {
@@ -148,7 +155,7 @@ function gerenciarCenario() {
         }
 
         const fatorEscalaCirculo = escalaAtual > 0 ? escalaAtual : 1;
-        const raioCirculoAtual = raioCirculoBase * (fatorEscalaCirculo * 0.8 + 0.2);
+        const raioCirculoAtual = raioCirculoBase * (fatorEscalaCirculo * 0.7 + 0.3);
 
         borboletas.forEach(b => {
             b.angulo += b.velocidade;
@@ -162,7 +169,7 @@ function gerenciarCenario() {
             const anguloRotacao = (b.angulo * 180 / Math.PI) + 180;
             
             const fatorEscalaBorboleta = escalaAtual > 0 ? escalaAtual : 1;
-            const tamanhoBorboletaAtual = b.tamanhoBase * (fatorEscalaBorboleta * 0.6 + 0.4);
+            const tamanhoBorboletaAtual = b.tamanhoBase * (fatorEscalaBorboleta * 0.5 + 0.5);
 
             b.elemento.style.transform = `translate(-50%, -50%) scale(${tamanhoBorboletaAtual}) rotate(${anguloRotacao}deg)`;
 
@@ -176,7 +183,7 @@ function gerenciarCenario() {
 // Inicia o fluxo de animações
 gerenciarCenario();
 
-// Playlist Inteligente com passagem de faixas e mudança de temas
+// Playlist Inteligente de Músicas
 document.addEventListener("DOMContentLoaded", () => {
     const faixas = [
         { botao: document.getElementById("play_jesus"), audio: document.getElementById("musicaJesus"), nome: "JESUS" },
@@ -235,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    const primeiraFaixa = faixas[0];
+    const primeiraFaixa = faixas;
     if (primeiraFaixa && primeiraFaixa.audio) {
         primeiraFaixa.audio.play()
             .then(() => {

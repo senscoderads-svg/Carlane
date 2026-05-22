@@ -4,19 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Borboletas Mágicas em Círculo</title>
-    <!-- Vincula o arquivo de estilos -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Botão de Gravação -->
-    <button class="btn-gravar" id="btnGravar" onclick="controlarGravacao()">GRAVAR VÍDEO</button>
- <button class="play" id="play_music">OUVIR MÚSICA</button>
-  <button class="play" id="play_music">OUVIR MÚSICAr</button>
+    <!-- Botões de Controle e Playlist -->
+    <div class="controles-container">
+        <button class="btn-gravar" id="btnGravar" onclick="controlarGravacao()">GRAVAR VÍDEO</button>
+        <button class="play" id="play_revolutionary">OUVIR REVOLUTIONARY</button>
+        <button class="play" id="play_amen">OUVIR AMEN</button>
+    </div>
 
-    <!-- Elemento de Áudio Oculto (Substitua musica.mp3 pelo seu arquivo) -->
-    <audio id="musicaFundo" src="Revolutionary.mp3" loop></audio>
-     <audio id="musicaFundo" src="amen.mp3" loop></audio> 
+    <!-- Elementos de Áudio -->
+    <audio id="musicaRevolutionary" src="Revolutionary.mp3" loop></audio>
+    <audio id="musicaAmen" src="amen.mp3" loop></audio> 
 
     <!-- Elemento da Flor Central -->
     <div class="flor-centro" id="flor">
@@ -31,7 +32,6 @@
         <div class="miolo"></div>
     </div>
 
-    <!-- Vincula o arquivo de animação e lógica -->
     <script src="script.js"></script>
 </body>
 </html>

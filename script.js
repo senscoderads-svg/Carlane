@@ -151,14 +151,47 @@ async function controlarGravacao() {
 // Inicializa a órbita das borboletas
 orbitar();
 document.addEventListener("DOMContentLoaded", () => {
-    const musica = document.getElementById("musicaFundo");
+    // Mapeia os botões e seus respectivos áudios
+    const faixas = [
+        { botao: document.getElementById("play_revolutionary"), audio: document.getElementById("musicaRevolutionary"), nome: "REVOLUTIONARY" },
+        { botao: document.getElementById("play_amen"), audio: document.getElementById("musicaAmen"), nome: "AMEN" }
+    ];
 
-    // Tenta tocar assim que a página carrega
-    musica.play().catch(() => {
-        // Se o navegador bloquear, toca no primeiro clique do usuário na página
+    // Função para parar todas as músicas, exceto a atual (se fornecida)
+    function pararTodas(excetoAudio = null) {
+        faixas.forEach(faixa => {
+            if (faixa.audio !== excetoAudio) {
+                faixa.audio.pause();
+                faixa.audio.currentTime = 0; // Reinicia a música
+                faixa.botao.innerText = `OUVIR ${faixa.nome}`;
+            }
+        });
+    }
+
+    // Configura o evento de clique para cada faixa da lista
+    faixas.forEach(faixa => {
+        faixa.botao.addEventListener("click", () => {
+            if (faixa.audio.paused) {
+                pararTodas(faixa.audio); // Para a outra música antes de tocar esta
+                faixa.audio.play().catch(err => console.log("Erro ao reproduzir:", err));
+                faixa.botao.innerText = `PAUSAR ${faixa.nome}`;
+            } else {
+                faixa.audio.pause();
+                faixa.botao.innerText = `OUVIR ${faixa.nome}`;
+            }
+        });
+    });
+
+    // Tenta tocar a primeira música automaticamente ao abrir o site
+    faixas[0].audio.play().then(() => {
+        faixas[0].botao.innerText = `PAUSAR ${faixas[0].nome}`;
+    }).catch(() => {
+        // Se o navegador bloquear, aguarda o primeiro clique na página para tocar a primeira faixa
         document.addEventListener("click", () => {
-            musica.play();
-        }, { once: true }); // Executa apenas uma vez
+            if (faixas[0].audio.paused && faixas[1].audio.paused) {
+                faixas[0].audio.play();
+                faixas[0].botao.innerText = `PAUSAR ${faixas[0].nome}`;
+            }
+        }, { once: true });
     });
 });
-

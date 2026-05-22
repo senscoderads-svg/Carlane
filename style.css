@@ -188,3 +188,23 @@ body {
     0% { transform: scale(1); opacity: 1; }
     100% { transform: scale(0); opacity: 0; }
 }
+
+/* --- TRANSIÇÃO DE CORES DINÂMICAS DO FUNDO --- */
+body {
+    transition: background 1.5s ease-in-out; /* Faz a cor mudar de forma suave */
+}
+
+/* Fundo padrão / Música Jesus (Dourado/Fogo) */
+body.tema-jesus {
+    background: radial-gradient(circle at 50% 50%, #4a3b1a 0%, #1c1507 50%, #0a0802 100%);
+}
+
+/* Fundo Música Revolutionary (Púrpura/Neon) */
+body.tema-revolutionary {
+    background: radial-gradient(circle at 50% 50%, #441a4a 0%, #19071c 50%, #0a020b 100%);
+}
+
+/* Fundo Música Amen (Azul Celestial) */
+body.tema-amen {
+    background: radial-gradient(circle at 50% 50%, #1e4f70 0%, #0a1c28 50%, #030a10 100%);
+}

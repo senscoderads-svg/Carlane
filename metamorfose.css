@@ -79,3 +79,8 @@
     50% { transform: rotateY(-45deg) skewY(5deg); }
     100% { transform: rotateY(15deg) skewY(-2deg); }
 }
+
+.svg-borboleta-gigante {
+    max-width: 95vw; /* Impede que as asas cortem na lateral do celular */
+    max-height: 95vh;
+}

@@ -5,7 +5,8 @@ const htmlBorboleta = `
     <div class="asa direita"></div>
 `;
 
-const raioCirculoBase = 160; 
+// O raio do círculo agora se adapta dinamicamente: usa 20% da menor dimensão da tela
+let raioCirculoBase = Math.min(window.innerWidth, window.innerHeight) * 0.22; 
 const elementoFlor = document.getElementById('flor');
 
 let anguloTotalPercorrido = 0;
@@ -27,6 +28,12 @@ let coresAtivas = paletasCores.JESUS;
 
 let maoX = window.innerWidth / 2;
 let maoY = -50; 
+
+// Recalcula o raio do círculo se o usuário girar o celular ou redimensionar a tela
+window.addEventListener('resize', () => {
+    raioCirculoBase = Math.min(window.innerWidth, window.innerHeight) * 0.22;
+    maoX = window.innerWidth / 2;
+});
 
 function criarGlitter(x, y, quantidade = 1, tamanhoMaximo = 6) {
     for (let i = 0; i < quantidade; i++) {
@@ -130,13 +137,19 @@ function gerenciarCenario() {
         anguloTotalPercorrido += velocidadVoo;
         const voltasCompletas = anguloTotalPercorrido / (2 * Math.PI);
 
+        // CALCULO DE ESCALA ADAPTATIVO: O tamanho máximo varia de acordo com o espaço disponível na tela
+        // Celulares param em ~1.3x, monitores grandes chegam a ~2.2x mantendo a flor perfeitamente centralizada
+        const limiteEscalaTela = Math.min(window.innerWidth, window.innerHeight) / 380;
+        const escalaMaximaFlor = Math.max(Math.min(limiteEscalaTela, 2.2), 1.2);
+
         let escalaFlorBase = 0;
         if (voltasCompletas >= 1) {
             const progressoCrescimento = (voltasCompletas - 1) * 0.12;
-            escalaFlorBase = Math.min(progressoCrescimento, 1.8);
+            escalaFlorBase = Math.min(progressoCrescimento, escalaMaximaFlor);
         }
 
-        if (voltasCompletas > 2.5 && faseAnimacao === 'orbita_normal') {
+        // Transição inicia de forma inteligente baseada em quando a flor alcança seu tamanho limite responsivo
+        if (escalaFlorBase >= escalaMaximaFlor && faseAnimacao === 'orbita_normal') {
             faseAnimacao = 'sumindo_borboletas';
         }
 
@@ -185,7 +198,8 @@ function gerenciarCenario() {
             
             if (elementoFlor) {
                 elementoFlor.style.opacity = progressoMetamorfose;
-                elementoFlor.style.transform = `translate(-50%, -50%) scale(${1 + progressoMetamorfose * 1.5})`;
+                // A borboleta gigante agora também expande proporcionalmente ao limite máximo calculado para a tela
+                elementoFlor.style.transform = `translate(-50%, -50%) scale(${escalaMaximaFlor * (1 + progressoMetamorfose * 0.65)})`;
             }
             
             criarGlitter(cX, cY, 4, 12); 
@@ -193,7 +207,7 @@ function gerenciarCenario() {
             if (progressoMetamorfose >= 1) {
                 faseAnimacao = 'borboleta_gigante_ativa';
                 if (elementoFlor) {
-                    elementoFlor.classList.add('borboleta-giant-concluida'); // Sincroniza com o CSS
+                    elementoFlor.classList.add('borboleta-gigante-concluida');
                 }
             }
         }
@@ -208,8 +222,8 @@ function gerenciarCenario() {
             }
         }
 
-        const fatorEscalaCirculo = escalaFlorBase > 0 ? escalaFlorBase : 1;
-        const raioCirculoAtual = raioCirculoBase * (fatorEscalaCirculo * 0.7 + 0.3);
+        const factorEscalaCirculo = escalaFlorBase > 0 ? escalaFlorBase : 1;
+        const raioCirculoAtual = raioCirculoBase * (factorEscalaCirculo * 0.7 + 0.3);
 
         borboletas.forEach(b => {
             b.angulo += b.velocidade;
@@ -221,22 +235,14 @@ function gerenciarCenario() {
             b.elemento.style.opacity = opacidadeBorboletasPequenas;
 
             const anguloRotacao = (b.angulo * 180 / Math.PI) + 180;
-            const tamanhoBorboletaAtual = b.tamanhoBase * (fatorEscalaCirculo * 0.5 + 0.5);
+            const tamanhoBorboletaAtual = b.tamanhoBase * (factorEscalaCirculo * 0.5 + 0.5);
 
             b.elemento.style.transform = `translate(-50%, -50%) scale(${tamanhoBorboletaAtual}) rotate(${anguloRotacao}deg)`;
 
             if (opacidadeBorboletasPequenas > 0) {
                 criarGlitter(x, y, 1);
             } else {
-                b.elemento.style.display = 'none'; 
-            }
-        });
-    }
-
-    requestAnimationFrame(gerenciarCenario);
-}
-
-gerenciarCenario();
+b.elemento.style.display = 'none';}});}requestAnimationFrame(gerenciarCenario);}gerenciarCenario();
 // Substitua tudo a partir da linha "document.addEventListener("DOMContentLoaded", () => {" por isto:
 document.addEventListener("DOMContentLoaded", () => {
     const faixas = [

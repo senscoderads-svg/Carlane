@@ -92,7 +92,8 @@ orbitar();
 document.addEventListener("DOMContentLoaded", () => {
     const faixas = [
         { botao: document.getElementById("play_revolutionary"), audio: document.getElementById("musicaRevolutionary"), nome: "REVOLUTIONARY" },
-        { botao: document.getElementById("play_amen"), audio: document.getElementById("musicaAmen"), nome: "AMEN" }
+        { botao: document.getElementById("play_amen"), audio: document.getElementById("musicaAmen"), nome: "AMEN" },
+        { botao: document.getElementById("play_jesus"), audio: document.getElementById("musicaJesus"), nome:"JESUS"}
     ];
 
     function pararTodas(excetoAudio = null) {

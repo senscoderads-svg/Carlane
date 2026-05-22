@@ -1,0 +1,85 @@
+### 3. Criar o novo arquivo: `metamorfose.css`
+Crie um arquivo chamado **`metamorfose.css`** no mesmo diretório dos outros e cole este código completo dentro dele. Ele injeta o bater de asas realista e uma "aura" de luz estroboscópica de neon super iluminada por baixo da criatura:
+
+```css
+/* --- ESTILOS EXCLUSIVOS DA TRANFORMAÇÃO VETORIAL --- */
+
+.svg-borboleta-gigante {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+/* Esconde o miolo e pétalas antigos para dar lugar ao SVG real */
+.flor-centro.em-metamorfose .petala-grupo,
+.flor-centro.borboleta-gigante-concluida .petala-grupo,
+.flor-centro.em-metamorfose .miolo,
+.flor-centro.borboleta-gigante-concluida .miolo {
+    opacity: 0 !important;
+    transform: scale(0) !important;
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+/* Super Aura de luzes neon atrás da criatura */
+.luz-aura {
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    top: -65px;
+    left: -65px;
+    background: radial-gradient(circle, rgba(0,229,255,0.6) 0%, rgba(236,72,153,0.4) 50%, transparent 75%);
+    border-radius: 50%;
+    mix-blend-mode: screen;
+    filter: blur(20px);
+    z-index: 1;
+    animation: pulsarLuzes 1.5s infinite alternate ease-in-out;
+}
+
+@keyframes pulsarLuzes {
+    0% { transform: scale(0.8); opacity: 0.5; filter: brightness(1); }
+    100% { transform: scale(1.2); opacity: 1; filter: brightness(1.8); }
+}
+
+/* Configuração tridimensional das asas para a animação */
+.grupo-asas {
+    transform-style: preserve-3d;
+}
+
+.asa-gigante {
+    transition: all 0.5s ease;
+}
+
+/* Pontos de articulação das asas no centro do corpo (X=100) */
+.asa-gigante.esq {
+    transform-origin: 100px 100px;
+}
+
+.asa-gigante.dir {
+    transform-origin: 100px 100px;
+}
+
+/* Ativa o bater de asas majestoso e curvo em 3D quando concluído */
+.borboleta-gigante-concluida .asa-gigante.esq {
+    animation: vooRealEsquerdo 3s infinite alternate ease-in-out;
+}
+
+.borboleta-gigante-concluida .asa-gigante.dir {
+    animation: vooRealDireito 3s infinite alternate ease-in-out;
+}
+
+@keyframes vooRealEsquerdo {
+    0% { transform: rotateY(0deg) skewY(0deg); }
+    50% { transform: rotateY(45deg) skewY(-5deg); }
+    100% { transform: rotateY(-15deg) skewY(2deg); }
+}
+
+@keyframes vooRealDireito {
+    0% { transform: rotateY(0deg) skewY(0deg); }
+    50% { transform: rotateY(-45deg) skewY(5deg); }
+    100% { transform: rotateY(15deg) skewY(-2deg); }
+}

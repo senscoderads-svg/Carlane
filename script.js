@@ -11,11 +11,9 @@ const elementoFlor = document.getElementById('flor');
 let anguloTotalPercorrido = 0;
 const velocidadVoo = 0.012; 
 
-// Estados da linha do tempo: 'mao_descendo', 'mao_semeando', 'borboletas_surgindo', 'orbita_normal', 'sumindo_borboletas', 'metamorfose_flor', 'borboleta_gigante_ativa'
 let faseAnimacao = 'mao_descendo'; 
 let tempoFase = 0;
 
-// Variáveis de controle de opacidade e transição lenta
 let opacidadeBorboletasPequenas = 1;
 let progressoMetamorfose = 0;
 
@@ -153,17 +151,48 @@ function gerenciarCenario() {
 
         if (faseAnimacao === 'metamorfose_flor') {
             progressoMetamorfose += 0.003; 
-            if (elementoFlor) {
+            
+            if (elementoFlor && !elementoFlor.classList.contains('em-metamorfose')) {
                 elementoFlor.classList.add('em-metamorfose');
-                elementoFlor.style.setProperty('--progresso-meta', progressoMetamorfose);
+                
+                elementoFlor.innerHTML = `
+                    <div class="luz-aura"></div>
+                    <svg class="svg-borboleta-gigante" viewBox="0 0 200 200">
+                        <defs>
+                            <linearGradient id="gradAsa" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00e5ff" />
+                                <stop offset="50%" stop-color="#ff4081" />
+                                <stop offset="100%" stop-color="#e040fb" />
+                            </linearGradient>
+                            <filter id="superGlow">
+                                <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <g class="grupo-asas">
+                            <path class="asa-gigante esq" d="M100,100 C40,40 10,60 20,110 C25,135 60,140 100,100 Z M100,100 C50,110 30,140 40,165 C48,185 80,165 100,100 Z" fill="url(#gradAsa)" filter="url(#superGlow)"/>
+                            <path class="asa-gigante dir" d="M100,100 C160,40 190,60 180,110 C175,135 140,140 100,100 Z M100,100 C150,110 170,140 160,165 C152,185 120,165 100,100 Z" fill="url(#gradAsa)" filter="url(#superGlow)"/>
+                        </g>
+                        <rect x="96" y="60" width="8" height="80" rx="4" fill="#ffffff" filter="url(#superGlow)"/>
+                        <circle cx="100" cy="54" r="7" fill="#ffffff" filter="url(#superGlow)"/>
+                    </svg>
+                `;
             }
-            criarGlitter(cX, cY, 4, 8); 
+            
+            if (elementoFlor) {
+                elementoFlor.style.opacity = progressoMetamorfose;
+                elementoFlor.style.transform = `translate(-50%, -50%) scale(${1 + progressoMetamorfose * 1.5})`;
+            }
+            
+            criarGlitter(cX, cY, 4, 12); 
 
             if (progressoMetamorfose >= 1) {
-                progressoMetamorfose = 1;
                 faseAnimacao = 'borboleta_gigante_ativa';
                 if (elementoFlor) {
-                    elementoFlor.classList.remove('em-metamorfose');
                     elementoFlor.classList.add('borboleta-gigante-concluida');
                 }
             }
@@ -173,9 +202,10 @@ function gerenciarCenario() {
             elementoFlor.style.transform = `translate(-50%, -50%) scale(${escalaFlorBase})`;
         }
 
+        // CONTINUAÇÃO DO TRECHO CORTADO ATÉ O FINAL DO ARQUIVO:
         if (faseAnimacao === 'borboleta_gigante_ativa') {
-            if (tempoFase % 4 === 0) {
-                criarGlitter(cX + (Math.random() * 100 - 50), cY + (Math.random() * 100 - 50), 2, 10);
+            if (tempoFase % 2 === 0) {
+                criarGlitter(cX + (Math.random() * 160 - 80), cY + (Math.random() * 160 - 80), 3, 12);
             }
         }
 
@@ -209,7 +239,7 @@ function gerenciarCenario() {
 
 gerenciarCenario();
 
-// Playlist Inteligente com passagem de faixas corrigida
+// Playlist Inteligente com passagem automática de faixas
 document.addEventListener("DOMContentLoaded", () => {
     const faixas = [
         { botao: document.getElementById("play_jesus"), audio: document.getElementById("musicaJesus"), nome: "JESUS" },
@@ -225,61 +255,4 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.classList.add(`tema-${nomeMusica.toLowerCase()}`);
     }
 
-    function pararTodas(excetoAudio = null) {
-        faixas.forEach(faixa => {
-            if (faixa.audio !== excetoAudio && faixa.audio) {
-                faixa.audio.pause();
-                faixa.audio.currentTime = 0;
-                if (faixa.botao) faixa.botao.innerText = `OUVIR ${faixa.nome}`;
-            }
-        });
-    }
-
-    function tocarFaixa(indice) {
-        if (indice >= faixas.length) indice = 0; 
-        indiceAtivo = indice;
-        
-        const faixa = faixas[indiceAtivo];
-        if (faixa && faixa.audio) {
-            pararTodas(faixa.audio);
-            faixa.audio.play()
-                .then(() => {
-                    if (faixa.botao) faixa.botao.innerText = `PAUSAR ${faixa.nome}`;
-                    atualizarTemaVisual(faixa.nome);
-                })
-                .catch(err => console.log("Bloqueado pelo navegador:", err));
-        }
-    }
-
-    faixas.forEach((faixa, indice) => {
-        if (faixa.botao && faixa.audio) {
-            faixa.botao.addEventListener("click", () => {
-                if (faixa.audio.paused) {
-                    tocarFaixa(indice);
-                } else {
-                    faixa.audio.pause();
-                    faixa.botao.innerText = `OUVIR ${faixa.nome}`;
-                }
-            });
-
-            faixa.audio.addEventListener("ended", () => {
-                tocarFaixa(indiceAtivo + 1);
-            });
-        }
-    });
-
-    // Autoplay ou ativação por clique inicial
-    if (faixas[0] && faixas[0].audio) {
-        faixas[0].audio.play()
-            .then(() => {
-                if (faixas[0].botao) faixas[0].botao.innerText = `PAUSAR ${faixas[0].nome}`;
-                atualizarTemaVisual(faixas[0].nome);
-            })
-            .catch(() => {
-                const iniciarNoClique = () => {
-                    tocarFaixa(0);
-document.removeEventListener("click", iniciarNoClique);
-};
-document.addEventListener("click", iniciarNoClique);
-});
-}});
+function pararTodas(excetoAudio = null) {faixas.forEach(faixa => {if (faixa.audio !== excetoAudio && faixa.audio) {faixa.audio.pause();faixa.audio.currentTime = 0;if (faixa.botao) faixa.botao.innerText = OUVIR ${faixa.nome};}});}function tocarFaixa(indice) {if (indice >= faixas.length) indice = 0;indiceAtivo = indice;const faixa = faixas[indiceAtivo];if (faixa && faixa.audio) {pararTodas(faixa.audio);faixa.audio.play().then(() => {if (faixa.botao) faixa.botao.innerText = PAUSAR ${faixa.nome};atualizarTemaVisual(faixa.nome);}).catch(err => console.log("Bloqueado pelo navegador:", err));}}faixas.forEach((faixa, indice) => {if (faixa.botao && faixa.audio) {faixa.botao.addEventListener("click", () => {if (faixa.audio.paused) {tocarFaixa(indice);} else {faixa.audio.pause();faixa.botao.innerText = OUVIR ${faixa.nome};}});faixa.audio.addEventListener("ended", () => {tocarFaixa(indiceAtivo + 1);});}});if (faixas[0] && faixas[0].audio) {faixas[0].audio.play().then(() => {if (faixas[0].botao) faixas[0].botao.innerText = PAUSAR ${faixas[0].nome};atualizarTemaVisual(faixas[0].nome);}).catch(() => {const iniciarNoClique = () => {tocarFaixa(0);document.removeEventListener("click", iniciarNoClique);};document.addEventListener("click", iniciarNoClique);});}});

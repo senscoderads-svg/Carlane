@@ -1,8 +1,4 @@
-### 3. Criar o novo arquivo: `metamorfose.css`
-Crie um arquivo chamado **`metamorfose.css`** no mesmo diretório dos outros e cole este código completo dentro dele. Ele injeta o bater de asas realista e uma "aura" de luz estroboscópica de neon super iluminada por baixo da criatura:
-
-```css
-/* --- ESTILOS EXCLUSIVOS DA TRANFORMAÇÃO VETORIAL --- */
+/* --- ESTILOS EXCLUSIVOS DA TRANSFORMAÇÃO VETORIAL --- */
 
 .svg-borboleta-gigante {
     width: 100%;
@@ -42,7 +38,7 @@ Crie um arquivo chamado **`metamorfose.css`** no mesmo diretório dos outros e c
 
 @keyframes pulsarLuzes {
     0% { transform: scale(0.8); opacity: 0.5; filter: brightness(1); }
-    100% { transform: scale(1.2); opacity: 1; filter: brightness(1.8); }
+    100% { transform: scale(1.2); opacity: 1; filter: brightness(1.8); filter: drop-shadow(0 0 30px rgba(0,229,255,0.8)); }
 }
 
 /* Configuração tridimensional das asas para a animação */
@@ -63,7 +59,7 @@ Crie um arquivo chamado **`metamorfose.css`** no mesmo diretório dos outros e c
     transform-origin: 100px 100px;
 }
 
-/* Ativa o bater de asas majestoso e curvo em 3D quando concluído */
+/* CORRIGIDO: Seletor unificado com o script.js para ativar o voo real */
 .borboleta-gigante-concluida .asa-gigante.esq {
     animation: vooRealEsquerdo 3s infinite alternate ease-in-out;
 }

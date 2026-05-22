@@ -193,7 +193,7 @@ function gerenciarCenario() {
             if (progressoMetamorfose >= 1) {
                 faseAnimacao = 'borboleta_gigante_ativa';
                 if (elementoFlor) {
-                    elementoFlor.classList.add('borboleta-gigante-concluida');
+                    elementoFlor.classList.add('borboleta-giant-concluida'); // Sincroniza com o CSS
                 }
             }
         }
@@ -202,7 +202,6 @@ function gerenciarCenario() {
             elementoFlor.style.transform = `translate(-50%, -50%) scale(${escalaFlorBase})`;
         }
 
-        // CONTINUAÇÃO DO TRECHO CORTADO ATÉ O FINAL DO ARQUIVO:
         if (faseAnimacao === 'borboleta_gigante_ativa') {
             if (tempoFase % 2 === 0) {
                 criarGlitter(cX + (Math.random() * 160 - 80), cY + (Math.random() * 160 - 80), 3, 12);
@@ -238,8 +237,7 @@ function gerenciarCenario() {
 }
 
 gerenciarCenario();
-
-// Playlist Inteligente com passagem automática de faixas
+// Substitua tudo a partir da linha "document.addEventListener("DOMContentLoaded", () => {" por isto:
 document.addEventListener("DOMContentLoaded", () => {
     const faixas = [
         { botao: document.getElementById("play_jesus"), audio: document.getElementById("musicaJesus"), nome: "JESUS" },
@@ -255,4 +253,55 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.classList.add(`tema-${nomeMusica.toLowerCase()}`);
     }
 
-function pararTodas(excetoAudio = null) {faixas.forEach(faixa => {if (faixa.audio !== excetoAudio && faixa.audio) {faixa.audio.pause();faixa.audio.currentTime = 0;if (faixa.botao) faixa.botao.innerText = OUVIR ${faixa.nome};}});}function tocarFaixa(indice) {if (indice >= faixas.length) indice = 0;indiceAtivo = indice;const faixa = faixas[indiceAtivo];if (faixa && faixa.audio) {pararTodas(faixa.audio);faixa.audio.play().then(() => {if (faixa.botao) faixa.botao.innerText = PAUSAR ${faixa.nome};atualizarTemaVisual(faixa.nome);}).catch(err => console.log("Bloqueado pelo navegador:", err));}}faixas.forEach((faixa, indice) => {if (faixa.botao && faixa.audio) {faixa.botao.addEventListener("click", () => {if (faixa.audio.paused) {tocarFaixa(indice);} else {faixa.audio.pause();faixa.botao.innerText = OUVIR ${faixa.nome};}});faixa.audio.addEventListener("ended", () => {tocarFaixa(indiceAtivo + 1);});}});if (faixas[0] && faixas[0].audio) {faixas[0].audio.play().then(() => {if (faixas[0].botao) faixas[0].botao.innerText = PAUSAR ${faixas[0].nome};atualizarTemaVisual(faixas[0].nome);}).catch(() => {const iniciarNoClique = () => {tocarFaixa(0);document.removeEventListener("click", iniciarNoClique);};document.addEventListener("click", iniciarNoClique);});}});
+    function pararTodas(excetoAudio = null) {
+        faixas.forEach(faixa => {
+            if (faixa.audio !== excetoAudio && faixa.audio) {
+                faixa.audio.pause();
+                faixa.audio.currentTime = 0;
+                if (faixa.botao) faixa.botao.innerText = `OUVIR ${faixa.nome}`;
+            }
+        });
+    }
+
+    function tocarFaixa(indice) {
+        if (indice >= faixas.length) indice = 0;
+        indiceAtivo = indice;
+        const faixa = faixas[indiceAtivo];
+        if (faixa && faixa.audio) {
+            pararTodas(faixa.audio);
+            faixa.audio.play().then(() => {
+                if (faixa.botao) faixa.botao.innerText = `PAUSAR ${faixa.nome}`;
+                atualizarTemaVisual(faixa.nome);
+            }).catch(err => console.log("Bloqueado pelo navegador:", err));
+        }
+    }
+
+    faixas.forEach((faixa, indice) => {
+        if (faixa.botao && faixa.audio) {
+            faixa.botao.addEventListener("click", () => {
+                if (faixa.audio.paused) {
+                    tocarFaixa(indice);
+                } else {
+                    faixa.audio.pause();
+                    faixa.botao.innerText = `OUVIR ${faixa.nome}`;
+                }
+            });
+            faixa.audio.addEventListener("ended", () => {
+                tocarFaixa(indiceAtivo + 1);
+            });
+        }
+    });
+
+    if (faixas[0] && faixas[0].audio) {
+        faixas[0].audio.play().then(() => {
+            if (faixas[0].botao) faixas[0].botao.innerText = `PAUSAR ${faixas[0].nome}`;
+            atualizarTemaVisual(faixas[0].nome);
+        }).catch(() => {
+            const iniciarNoClique = () => {
+                tocarFaixa(0);
+                document.removeEventListener("click", iniciarNoClique);
+            };
+            document.addEventListener("click", iniciarNoClique);
+        });
+    }
+});
